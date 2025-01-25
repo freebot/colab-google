@@ -1,15 +1,16 @@
-# Usar una imagen base con Python y Jupyter
+# Use an ARM-compatible base image
 FROM jupyter/base-notebook:python-3.10
 
-# Instalar dependencias del sistema necesarias para ta-lib
+# Switch to root for system operations
+USER root
+
+# Install dependencies
 RUN apt-get update && apt-get install -y \
-    libta-lib0 \
-    libta-lib-dev \
     build-essential \
     python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Instalar bibliotecas de Python necesarias
+# Install Python libraries
 RUN pip install --no-cache-dir \
     jupyterlab \
     notebook \
@@ -19,10 +20,13 @@ RUN pip install --no-cache-dir \
     scikit-learn \
     tensorflow \
     torch torchvision torchaudio \
-    ta-lib  # Instalar ta-lib aquí
+    pandas-ta  # Use pandas-ta instead of ta-lib
 
-# Exponer el puerto 8888 (para Jupyter)
+# Switch back to the default user
+USER $NB_UID
+
+# Expose port 8888 for Jupyter
 EXPOSE 8888
 
-# Comando de inicio
+# Start Jupyter Notebook
 CMD ["start-notebook.sh", "--NotebookApp.token=''", "--NotebookApp.password=''"]
