@@ -8,6 +8,7 @@ USER root
 RUN apt-get update && apt-get install -y \
     build-essential \
     python3-dev \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python libraries
@@ -21,6 +22,9 @@ RUN pip install --no-cache-dir \
     tensorflow \
     torch torchvision torchaudio \
     pandas-ta  # Use pandas-ta instead of ta-lib
+
+# Fix permissions for the default user
+RUN chown -R $NB_UID:$NB_GID /home/jovyan
 
 # Switch back to the default user
 USER $NB_UID
